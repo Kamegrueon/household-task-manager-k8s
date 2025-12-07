@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: household-task-manager
+data:
+  VITE_API_BASE_URL: "https://household-task-mgr.duckdns.org/api"

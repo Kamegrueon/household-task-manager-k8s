@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: household-task-manager
+data:
+  ENVIRONMENT: "production"
+  CORS_ORIGINS: "https://household-task-mgr.duckdns.org"

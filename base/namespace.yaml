@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: household-task-manager
+  labels:
+    name: household-task-manager
+    app: household-task-manager
