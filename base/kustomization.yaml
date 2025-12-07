@@ -7,6 +7,7 @@ resources:
   - namespace.yaml
   - database/configmap.yaml
   - database/sealed-secret.yaml
+  - database/pv.yaml
   - database/pvc.yaml
   - database/statefulset.yaml
   - database/service.yaml
