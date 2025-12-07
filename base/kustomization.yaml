@@ -6,12 +6,12 @@ namespace: household-task-manager
 resources:
   - namespace.yaml
   - database/configmap.yaml
-  - database/secret.yaml
+  - database/sealed-secret.yaml
   - database/pvc.yaml
   - database/statefulset.yaml
   - database/service.yaml
   - backend/configmap.yaml
-  - backend/secret.yaml
+  - backend/sealed-secret.yaml
   - backend/deployment.yaml
   - backend/service.yaml
   - frontend/configmap.yaml
