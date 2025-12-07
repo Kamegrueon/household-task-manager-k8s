@@ -3,14 +3,9 @@ kind: Kustomization
 
 namespace: household-task-manager
 
-bases:
-  - ../../base
-
 resources:
+  - ../../base
   - ingress.yaml
-
-patchesStrategicMerge:
-  - patches/replicas.yaml
 
 images:
   - name: ghcr.io/kamegrueon/household-task-manager-backend
