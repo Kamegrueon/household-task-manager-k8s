@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: household-task-manager
+  name: household-task-manager-backend
   namespace: household-task-manager
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
@@ -25,10 +25,3 @@ spec:
             name: backend
             port:
               number: 8000
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 80
