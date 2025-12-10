@@ -3,5 +3,4 @@ kind: Kustomization
 
 resources:
   - application.yaml
-  # Uncomment after setting up Tailscale OAuth credentials
-  # - tailscale
+  - tailscale

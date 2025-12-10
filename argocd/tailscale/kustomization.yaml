@@ -6,6 +6,5 @@ namespace: argocd
 resources:
   - rbac.yaml
   - operator.yaml
-  # Uncomment after creating the sealed secret
-  # - oauth-secret-sealed.yaml
+  - oauth-secret-sealed.yaml
   - argocd-tailscale-service.yaml
