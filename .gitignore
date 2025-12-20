@@ -1,0 +1,15 @@
+.claude
+
+# Sealed Secrets の平文ファイルを除外
+**/repo-secret.yaml
+**/database-secret.yaml
+**/backend-secret.yaml
+
+# テンプレート以外の平文Secretは除外
+*.secret.yaml
+!*.template
+
+# バックアップファイル
+backup.sql
+tls-backup.yaml
+sealed-secrets-key-backup.yaml
