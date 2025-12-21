@@ -15,9 +15,6 @@
 
 ```
 .
-├── argocd/               # Argo CD関連の設定
-│   ├── application.yaml  # Argo CD Applicationマニフェスト
-│   └── ...
 ├── base/                 # 環境共通の基本マニフェスト
 │   ├── backend/          # BackendのDeployment, Serviceなど
 │   ├── database/         # DatabaseのStatefulSet, PVCなど
@@ -30,7 +27,8 @@
 
 - **`base/`**: 全ての環境で共通となる基本的なマニフェストを配置します。Argo CDはこれをベースとして利用します。
 - **`overlays/`**: `production`や`staging`など、環境ごとの差分（パッチ）を設定します。例えば、レプリカ数やIngressの設定などをここで上書きます。
-- **`argocd/`**: このアプリケーション自体をArgo CDで管理するための`Application`マニフェストを配置します。
+
+**注**: クラスタ基盤リソース（ArgoCD、NFS Provisioner、Cert-Managerなど）は、[rpi-k8s](https://github.com/Kamegrueon/rpi-k8s)リポジトリで管理されています。このリポジトリはアプリケーション固有のマニフェストのみを管理します。
 
 ## 🚀 デプロイ方法
 
@@ -40,55 +38,17 @@
 
 #### 前提条件
 - Kubernetesクラスタが稼働中
-- ArgoCD, cert-manager, ingress-nginx, Sealed Secrets Controller がインストール済み
-- kubeseal CLI がローカルにインストール済み
-- SSH秘密鍵（GitHubアクセス用）が手元にある
+- [rpi-k8s](https://github.com/Kamegrueon/rpi-k8s)リポジトリによるクラスタ基盤のセットアップが完了していること
+  - ArgoCD
+  - NFS Provisioner
+  - Cert-Manager ClusterIssuer
+  - ArgoCD Repository Secret
 
 #### 手順
 
-1. **ClusterIssuer のデプロイ**
-   ```bash
-   kubectl apply -k cluster-resources/
-   kubectl wait --for=condition=Ready clusterissuer/letsencrypt-prod --timeout=60s
-   ```
+初回セットアップでは、クラスタ基盤リソースのデプロイ後、ArgoCD経由で自動的にデプロイされます。手動デプロイが必要な場合のみ、以下の手順を実行してください。
 
-2. **ArgoCD Repository Secret の作成**
-   ```bash
-   # 現在のSecretを取得（既存環境から）
-   ssh rpi-master-1 'kubectl get secret -n argocd repo-household-task-manager-k8s -o yaml' > /tmp/current-secret.yaml
-
-   # または、新規作成する場合
-   cp argocd/repo-secret/repo-secret.yaml.template argocd/repo-secret/repo-secret.yaml
-   # SSH秘密鍵をBase64エンコードして repo-secret.yaml に設定
-   cat ~/.ssh/id_rsa | base64 -w 0  # この値を sshPrivateKey に設定
-
-   # SealedSecret化
-   kubeseal -f argocd/repo-secret/repo-secret.yaml \
-            -w argocd/repo-secret/sealed-secret.yaml \
-            --controller-namespace kube-system
-
-   # 平文ファイル削除
-   rm argocd/repo-secret/repo-secret.yaml
-
-   # SealedSecretをGitにコミット
-   git add argocd/repo-secret/sealed-secret.yaml
-   git commit -m "Add ArgoCD repository SealedSecret"
-   git push
-
-   # デプロイ
-   kubectl apply -f argocd/repo-secret/sealed-secret.yaml
-   kubectl wait --for=condition=Synced sealedsecret/repo-household-task-manager-k8s \
-     -n argocd --timeout=60s
-   ```
-
-3. **ArgoCD Application のデプロイ**
-   ```bash
-   kubectl apply -f argocd/application.yaml
-   kubectl wait --for=jsonpath='{.status.sync.status}'=Synced \
-     application/household-task-manager -n argocd --timeout=300s
-   ```
-
-4. **動作確認**
+**動作確認**
    ```bash
    # 全Podの起動を確認
    kubectl get pods -n household-task-manager
@@ -195,29 +155,20 @@ kubectl delete secret repo-household-task-manager-k8s -n argocd
 ### リソース復元
 
 ```bash
-# 1. ClusterIssuer デプロイ
-kubectl apply -k cluster-resources/
-kubectl wait --for=condition=Ready clusterissuer/letsencrypt-prod --timeout=60s
+# 1. ArgoCD Application が自動的に再デプロイされることを確認
+kubectl get application household-task-manager -n argocd
 
-# 2. ArgoCD Repository Secret デプロイ
-kubectl apply -f argocd/repo-secret/sealed-secret.yaml
-kubectl wait --for=condition=Synced sealedsecret/repo-household-task-manager-k8s \
-  -n argocd --timeout=60s
-
-# 3. ArgoCD Application デプロイ
-kubectl apply -f argocd/application.yaml
-kubectl wait --for=jsonpath='{.status.sync.status}'=Synced \
-  application/household-task-manager -n argocd --timeout=300s
-
-# 4. 全Pod起動待機
+# 2. 全Pod起動待機
 kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=household-task-manager \
   -n household-task-manager --timeout=300s
 
-# 5. データ復元（必要な場合）
+# 3. データ復元（必要な場合）
 kubectl cp backup.sql household-task-manager/postgres-0:/tmp/backup.sql
 kubectl exec -it -n household-task-manager statefulset/postgres -- \
   psql -U postgres household_task_manager < /tmp/backup.sql
 ```
+
+**注**: クラスタ基盤リソース（ArgoCD、NFS Provisioner、Cert-Manager）の復元手順については、[rpi-k8s](https://github.com/Kamegrueon/rpi-k8s)リポジトリを参照してください。
 
 ### 検証
 
