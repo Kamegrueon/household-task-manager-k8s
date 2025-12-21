@@ -30,9 +30,9 @@ spec:
             - name: NFS_SERVER
               value: rpi-worker-1
             - name: NFS_PATH
-              value: /mnt/ssd-nfs/k8s-nfs
+              value: /mnt/ssd-nfs
       volumes:
         - name: nfs-client-root
           nfs:
             server: rpi-worker-1
-            path: /mnt/ssd-nfs/k8s-nfs
+            path: /mnt/ssd-nfs
