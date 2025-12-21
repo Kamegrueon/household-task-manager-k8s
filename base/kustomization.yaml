@@ -7,8 +7,9 @@ resources:
   - namespace.yaml
   - database/configmap.yaml
   - database/sealed-secret.yaml
-  - database/pv.yaml
-  - database/pvc.yaml
+  # - database/pv.yaml  # Migrated to NFS
+  # - database/pvc.yaml  # Migrated to NFS
+  - database/pvc-nfs.yaml
   - database/statefulset.yaml
   - database/service.yaml
   - backend/configmap.yaml

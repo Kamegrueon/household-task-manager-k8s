@@ -14,8 +14,6 @@ spec:
       labels:
         app: postgres
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: rpi-worker-1
       containers:
       - name: postgres
         image: postgres:16-alpine
@@ -57,4 +55,4 @@ spec:
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
-          claimName: postgres-pvc
+          claimName: postgres-pvc-nfs
