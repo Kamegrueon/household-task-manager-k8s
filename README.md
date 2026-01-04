@@ -30,6 +30,18 @@
 
 **注**: クラスタ基盤リソース（ArgoCD、NFS Provisioner、Cert-Managerなど）は、[rpi-k8s](https://github.com/Kamegrueon/rpi-k8s)リポジトリで管理されています。このリポジトリはアプリケーション固有のマニフェストのみを管理します。
 
+## ブランチ戦略
+
+本リポジトリは3環境構成のGitOpsを採用しています。
+
+| ブランチ        | 用途                      | デプロイ先  | ArgoCD Application             |
+| --------------- | ------------------------- | ----------- | ------------------------------ |
+| `main`          | 本番環境のマニフェスト    | Production  | household-task-manager-prod    |
+| `release/v*`    | リリース準備（E2Eテスト） | Staging     | household-task-manager-staging |
+| `develop`       | 開発環境のマニフェスト    | Development | household-task-manager-dev     |
+| `auto-update-*` | 自動PR用ブランチ          | -           | -                              |
+
+
 ## 🚀 デプロイ方法
 
 ### 🔧 初回セットアップ（ブートストラップ）
