@@ -119,8 +119,8 @@
 - **Limits**: CPU 500m, Memory 512Mi
 
 #### ヘルスチェック
-- **Liveness**: HTTP GET /docs:8000 (30秒後から10秒間隔)
-- **Readiness**: HTTP GET /docs:8000 (10秒後から5秒間隔)
+- **Liveness**: HTTP GET /health:8000 (30秒後から10秒間隔)
+- **Readiness**: HTTP GET /readiness:8000 (10秒後から5秒間隔)
 
 #### Service
 - **タイプ**: ClusterIP
@@ -303,12 +303,12 @@ PersistentVolume (10Gi, rpi-worker-1)
 
 ### Liveness Probe (生存確認)
 - **PostgreSQL**: pg_isready コマンド
-- **Backend**: /docs エンドポイント (HTTP GET)
+- **Backend**: /health エンドポイント (HTTP GET)
 - **Frontend**: / ルートパス (HTTP GET)
 
 ### Readiness Probe (準備完了確認)
 - **PostgreSQL**: pg_isready コマンド (より早い間隔)
-- **Backend**: /docs エンドポイント (より早い間隔)
+- **Backend**: /readiness エンドポイント (より早い間隔)
 - **Frontend**: / ルートパス (より早い間隔)
 
 ### 推奨される追加監視
